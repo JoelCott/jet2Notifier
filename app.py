@@ -35,8 +35,9 @@ def get_current_price():
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--remote-debugging-port=9222")
 
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
+    
     try:
         driver.get(JET2_URL)
 
