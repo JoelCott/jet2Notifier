@@ -5,14 +5,11 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from apscheduler.schedulers.background import BackgroundScheduler 
-from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 
 app = Flask(__name__)
@@ -36,12 +33,9 @@ def get_current_price():
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--remote-debugging-port=9222")
 
-    
-    service = Service(ChromeDriverManager().install())
+    # ✅ Make sure this path points to the exact chromedriver.exe
+    service = Service(r"C:\webdrivers\chromedriver.exe")
     driver = webdriver.Chrome(service=service, options=options)
-
-
-    driver = webdriver.Chrome(options=options)
 
     try:
         driver.get(JET2_URL)
@@ -60,6 +54,7 @@ def get_current_price():
 
     finally:
         driver.quit()
+
 
 def load_previous_price():
     if os.path.exists(PRICE_FILE):
