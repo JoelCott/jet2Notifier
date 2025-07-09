@@ -11,6 +11,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from apscheduler.schedulers.background import BackgroundScheduler 
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 app = Flask(__name__)
 
@@ -33,9 +35,7 @@ def get_current_price():
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--remote-debugging-port=9222")
 
-    # ✅ Make sure this path points to the exact chromedriver.exe
-    service = Service(r"C:\webdrivers\chromedriver.exe")
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
     try:
         driver.get(JET2_URL)
@@ -54,6 +54,7 @@ def get_current_price():
 
     finally:
         driver.quit()
+
 
 
 def load_previous_price():
