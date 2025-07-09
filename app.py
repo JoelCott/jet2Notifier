@@ -37,7 +37,7 @@ def get_current_price():
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
-    
+
     try:
         driver.get(JET2_URL)
 
@@ -325,8 +325,6 @@ def api_price():
         previous_price = load_previous_price()
         log(f"💷 Previous saved price: {previous_price}")
 
-        #price = 50
-
         if previous_price is None:
             save_price(price)
             log(f"💾 First run - saved current price: £{price}")
@@ -340,7 +338,9 @@ def api_price():
 
         return jsonify({'price': price, 'logs': logs})
     except Exception as e:
-        log(f"❌ Unexpected error: {e}")
+        import traceback
+        err_trace = traceback.format_exc()
+        log(f"❌ Unexpected error: {e}\n{err_trace}")
         return jsonify({'error': str(e), 'logs': logs}), 500
 
 if __name__ == '__main__':
