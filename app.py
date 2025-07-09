@@ -28,7 +28,9 @@ def get_current_price():
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
+
 
     driver = webdriver.Chrome(options=options)
 
@@ -336,6 +338,8 @@ if __name__ == '__main__':
     scheduler.add_job(func=check_price_job, trigger="interval", minutes=10)
     scheduler.start()
     try:
-        app.run(host='0.0.0.0', port=5000)
+        app.run(host='0.0.0.0', port=5000, use_reloader=False)
     except (KeyboardInterrupt, SystemExit):
+        pass
+    finally:
         scheduler.shutdown()
