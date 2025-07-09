@@ -310,28 +310,32 @@ def api_price():
         print(msg)
         logs.append(msg)
 
-    price, error = get_current_price()
-    if error:
-        log(f"❌ Error getting price: {error}")
-        return jsonify({'error': error, 'logs': logs}), 500
+    try:
+        price, error = get_current_price()
+        if error:
+            log(f"❌ Error getting price: {error}")
+            return jsonify({'error': error, 'logs': logs}), 500
 
-    previous_price = load_previous_price()
-    log(f"💷 Previous saved price: {previous_price}")
+        previous_price = load_previous_price()
+        log(f"💷 Previous saved price: {previous_price}")
 
-    #price = 50
+        #price = 50
 
-    if previous_price is None:
-        save_price(price)
-        log(f"💾 First run - saved current price: £{price}")
-    elif price < previous_price:
-        log(f"🎉 Price dropped! Previous: £{previous_price}, Now: £{price}")
-        alert_result = send_email_alert(price, previous_price)
-        log(alert_result)
-        save_price(price)
-    else:
-        log(f"ℹ️ No price drop detected. Current price: £{price}, Previous price: £{previous_price}")
+        if previous_price is None:
+            save_price(price)
+            log(f"💾 First run - saved current price: £{price}")
+        elif price < previous_price:
+            log(f"🎉 Price dropped! Previous: £{previous_price}, Now: £{price}")
+            alert_result = send_email_alert(price, previous_price)
+            log(alert_result)
+            save_price(price)
+        else:
+            log(f"ℹ️ No price drop detected. Current price: £{price}, Previous price: £{previous_price}")
 
-    return jsonify({'price': price, 'logs': logs})
+        return jsonify({'price': price, 'logs': logs})
+    except Exception as e:
+        log(f"❌ Unexpected error: {e}")
+        return jsonify({'error': str(e), 'logs': logs}), 500
 
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
