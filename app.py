@@ -29,24 +29,23 @@ TO_EMAIL = 'joelcott4329@gmail.com'       # Where to send alerts
 
 def get_current_price():
     options = Options()
-    options.add_argument("--headless")  # Remove this temporarily to debug
+    options.add_argument("--headless")  # Comment this line out to see the browser
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
 
-    # Optional: set Chrome binary location if needed
-    # options.binary_location = "/path/to/chrome"  # Uncomment and update if necessary
-
-    service = Service(r"C:\webdrivers\chromedriver.exe")
-    driver = webdriver.Chrome(service=service, options=options)
-
     try:
         print("Starting price check...")
+
+        # Automatically install the correct ChromeDriver for your system
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
+
         driver.get(JET2_URL)
 
-        # ✅ Add this line to inspect the page content before finding the price
-        print(driver.page_source[:1000])  # This prints the first 1000 characters of HTML
+        # Print part of the page source for debugging
+        print(driver.page_source[:1000])
 
         wait = WebDriverWait(driver, 15)
         price_element = wait.until(
@@ -55,13 +54,18 @@ def get_current_price():
 
         price_text = price_element.text.strip()
         price = int(''.join(filter(str.isdigit, price_text)))
+
         return price, None
 
     except Exception as e:
         return None, str(e)
 
     finally:
-        driver.quit()
+        try:
+            driver.quit()
+        except:
+            pass
+
 
 
 
@@ -138,16 +142,16 @@ def check_price_job():
     msg_lines = [f"ℹ️ Scheduled Job - Previous price: {previous_price}", f"Scheduled Job - Current price: {price}"]
 
     #price = 50
-    if previous_price is None:
-        save_price(price)
-        msg_lines.append(f"💾 Scheduled Job - First run, saved price: £{price}")
-    elif price < previous_price:
+    #if previous_price is None:
+    #    save_price(price)
+    #    msg_lines.append(f"💾 Scheduled Job - First run, saved price: £{price}")
+    if price < previous_price:
         msg_lines.append(f"🎉 Scheduled Job - Price dropped! Previous: £{previous_price}, Now: £{price} Secure the holiday here: {JET2_URL}")
         alert_result = send_email_alert(price, previous_price)
         msg_lines.append(f"💷 Scheduled Job - {alert_result}")
         save_price(price)
-    else:
-        msg_lines.append(f"ℹ️ Scheduled Job - No price drop. Current: £{price}, Previous: £{previous_price}")
+    #else:
+        #msg_lines.append(f"ℹ️ Scheduled Job - No price drop. Current: £{price}, Previous: £{previous_price}")
 
     final_message = "\n".join(msg_lines)
     print(final_message)
