@@ -29,7 +29,7 @@ TO_EMAIL = 'joelcott4329@gmail.com'       # Where to send alerts
 
 def get_current_price():
     options = Options()
-    options.add_argument("--headless")  # Comment this line out to see the browser
+    #options.add_argument("--headless")  # Comment this line out to see the browser
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
