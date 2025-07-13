@@ -39,8 +39,11 @@ def get_current_price():
         print("Starting price check...")
 
         # Automatically install the correct ChromeDriver for your system
+        ("ChromeDriverManager is installing the driver...")
         service = Service(ChromeDriverManager().install())
+        print(f"Driver installed at: {service.path}")
         driver = webdriver.Chrome(service=service, options=options)
+
 
         driver.get(JET2_URL)
 
@@ -358,7 +361,7 @@ def api_price():
 
 if __name__ == '__main__':
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=check_price_job, trigger="interval", minutes=10)
+    scheduler.add_job(func=check_price_job, trigger="interval", minutes=1440)
     scheduler.start()
     try:
         app.run(host='0.0.0.0', port=5000, use_reloader=False)
