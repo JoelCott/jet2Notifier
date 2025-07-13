@@ -12,8 +12,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-import tempfile
-
+import tempfile  # <-- added
 
 app = Flask(__name__)
 
@@ -27,31 +26,24 @@ TO_EMAIL = 'joelcott4329@gmail.com'       # Where to send alerts
 
 # --- Price functions ---
 
-
 def get_current_price():
     options = Options()
-    #options.add_argument("--headless")  # Comment this line out to see the browser
+    options.add_argument("--headless")  # Comment this out if you want to see the browser window
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
-    options.add_argument(f"--user-data-dir={tempfile.mkdtemp()}")  # unique temp profile
-
+    
+    # Use a unique temp directory for Chrome user data to avoid session errors
+    options.add_argument(f"--user-data-dir={tempfile.mkdtemp()}")
 
     try:
         print("Starting price check...")
 
-        # Automatically install the correct ChromeDriver for your system
-        ("ChromeDriverManager is installing the driver...")
         service = Service(ChromeDriverManager().install())
-        print(f"Driver installed at: {service.path}")
         driver = webdriver.Chrome(service=service, options=options)
 
-
         driver.get(JET2_URL)
-
-        # Print part of the page source for debugging
-        print(driver.page_source[:1000])
 
         wait = WebDriverWait(driver, 15)
         price_element = wait.until(
@@ -71,11 +63,6 @@ def get_current_price():
             driver.quit()
         except:
             pass
-
-
-
-
-
 
 def load_previous_price():
     if os.path.exists(PRICE_FILE):
@@ -136,7 +123,7 @@ def send_email_status(body):
         return f"❌ Failed to send scheduled check email: {e}"
 
 def check_price_job():
-    """Background job that runs every 30 minutes to check price and send email with all info."""
+    """Background job that runs every 10 minutes to check price and send email with all info."""
     price, error = get_current_price()
     if error:
         msg = f"❌ Scheduled Job - Error getting price: {error}"
@@ -147,21 +134,21 @@ def check_price_job():
     previous_price = load_previous_price()
     msg_lines = [f"ℹ️ Scheduled Job - Previous price: {previous_price}", f"Scheduled Job - Current price: {price}"]
 
-    #price = 50
-    #if previous_price is None:
-    #    save_price(price)
-    #    msg_lines.append(f"💾 Scheduled Job - First run, saved price: £{price}")
-    if price < previous_price:
+    if previous_price is None:
+        save_price(price)
+        msg_lines.append(f"💾 Scheduled Job - First run, saved price: £{price}")
+    elif price < previous_price:
         msg_lines.append(f"🎉 Scheduled Job - Price dropped! Previous: £{previous_price}, Now: £{price} Secure the holiday here: {JET2_URL}")
         alert_result = send_email_alert(price, previous_price)
         msg_lines.append(f"💷 Scheduled Job - {alert_result}")
         save_price(price)
-    #else:
-        #msg_lines.append(f"ℹ️ Scheduled Job - No price drop. Current: £{price}, Previous: £{previous_price}")
+    else:
+        msg_lines.append(f"ℹ️ Scheduled Job - No price drop. Current: £{price}, Previous: £{previous_price}")
 
     final_message = "\n".join(msg_lines)
     print(final_message)
     send_email_status(final_message)
+
 
 # --- Flask routes ---
 
