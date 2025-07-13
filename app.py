@@ -12,6 +12,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+import tempfile
 
 
 app = Flask(__name__)
@@ -34,6 +35,8 @@ def get_current_price():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
+    options.add_argument(f"--user-data-dir={tempfile.mkdtemp()}")  # unique temp profile
+
 
     try:
         print("Starting price check...")
