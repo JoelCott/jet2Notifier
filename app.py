@@ -26,20 +26,27 @@ TO_EMAIL = 'joelcott4329@gmail.com'       # Where to send alerts
 
 # --- Price functions ---
 
+
 def get_current_price():
     options = Options()
-    options.add_argument("--headless")
+    options.add_argument("--headless")  # Remove this temporarily to debug
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
-    options.add_argument("--remote-debugging-port=9222")
 
-    service = Service(ChromeDriverManager().install())
+    # Optional: set Chrome binary location if needed
+    # options.binary_location = "/path/to/chrome"  # Uncomment and update if necessary
+
+    service = Service(r"C:\webdrivers\chromedriver.exe")
     driver = webdriver.Chrome(service=service, options=options)
 
     try:
+        print("Starting price check...")
         driver.get(JET2_URL)
+
+        # ✅ Add this line to inspect the page content before finding the price
+        print(driver.page_source[:1000])  # This prints the first 1000 characters of HTML
 
         wait = WebDriverWait(driver, 15)
         price_element = wait.until(
@@ -55,6 +62,8 @@ def get_current_price():
 
     finally:
         driver.quit()
+
+
 
 
 
