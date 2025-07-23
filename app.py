@@ -17,7 +17,7 @@ import tempfile  # <-- added
 app = Flask(__name__)
 
 # --- Configuration ---
-JET2_URL = 'https://www.jet2holidays.com/beach/balearics/majorca/cala-dor/alua-suites-las-rocas?holiday=591&duration=7&airport=1&date=14-06-2026&occupancy=r2c_r2c&board=5&iflight=1308104&oflight=1312119&rooms=72791_72791&gtmsearchtype=Beach%20Search%20Results&smartsearchid=962a55c0-d4a4-4f9c-baf5-ef485a17cff3&property=81041'
+JET2_URL = 'https://www.jet2holidays.com/beach/balearics/majorca/cala-dor/alua-suites-las-rocas/options?duration=7&airport=1&date=14-06-2026&occupancy=r3c_r2c&board=5&iflight=1308104&oflight=1312119&rooms=72791_72791&gtmsearchtype=Beach%20Search%20Results&property=81041'
 PRICE_FILE = 'Price.json'
 
 EMAIL_ADDRESS = 'jet2notify@gmail.com'  # Your email
