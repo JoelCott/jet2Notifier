@@ -144,6 +144,7 @@ def check_price_job():
         save_price(price)
     else:
         msg_lines.append(f"ℹ️ Scheduled Job - No price drop. Current: £{price}, Previous: £{previous_price}")
+        save_price(price)
 
     final_message = "\n".join(msg_lines)
     print(final_message)
@@ -341,6 +342,7 @@ def api_price():
             save_price(price)
         else:
             log(f"ℹ️ No price drop detected. Current price: £{price}, Previous price: £{previous_price}")
+            save_price(price)
 
         return jsonify({'price': price, 'logs': logs})
     except Exception as e:
